@@ -28,6 +28,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Brand)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Pic)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -44,17 +47,21 @@
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Categories.Id)
+                @Html.DisplayFor(modelItem => item.Categories.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Brand.Id)
+                @Html.DisplayFor(modelItem => item.Brand.Name)
             </td>
+            <td class="">
+                <img src="@item.Pic" alt="pic">
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>|
                 <a asp-action="Create" asp-controller="Orders" asp-route-PhoneId="@item.Id">make an order</a>
             </td>
+            
         </tr>
 }
     </tbody>

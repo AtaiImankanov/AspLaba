@@ -54,6 +54,10 @@ namespace LabAspMvc.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (_context.Categories.Any(b => b.Name == category.Name))
+                {
+                    return Redirect("https://localhost:44394/Categories/Create");
+                }
                 _context.Add(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

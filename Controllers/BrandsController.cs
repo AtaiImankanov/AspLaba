@@ -52,11 +52,17 @@ namespace LabAspMvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] Brand brand)
         {
+
             if (ModelState.IsValid)
             {
+                if (_context.Brands.Any(b => b.Name == brand.Name))
+                {
+                    return Redirect("https://localhost:44394/Brands/Create");
+                }
                 _context.Add(brand);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+
             }
             return View(brand);
         }

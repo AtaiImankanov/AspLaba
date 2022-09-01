@@ -3,6 +3,7 @@ using LabAspMvc.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -64,7 +65,7 @@ namespace LabAspMvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PhonesNCategoriesNBrandsViewModel model)
         {
-
+            model.Phone.created =DateTime.Now;
             if (ModelState.IsValid)
             {
                 _context.Add(model.Phone);
@@ -105,36 +106,14 @@ namespace LabAspMvc.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,CategoryId,BrandId")] Phone phone)
+        public async Task<IActionResult> Edit(PhonesNCategoriesNBrandsViewModel model)
         {
-            if (id != phone.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(phone);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PhoneExists(phone.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Id", phone.BrandId);
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Id", phone.CategoryId);
-            return View(phone);
+            model.Phone.edited=DateTime.Now;
+            _context.Phones.Update(model.Phone);
+            _context.SaveChanges();
+            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Id", model.Phone.BrandId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Id", model.Phone.CategoryId);
+            return RedirectToAction("Index");
         }
 
         // GET: Phones/Delete/5
