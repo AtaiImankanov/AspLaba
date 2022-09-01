@@ -48,6 +48,7 @@ namespace LabAspMvc.Controllers
         // GET: Phones/Create
         public IActionResult Create()
         {
+           
             var viewModel = new PhonesNCategoriesNBrandsViewModel
             {
                 Brands = _context.Brands.ToList(),
@@ -65,7 +66,7 @@ namespace LabAspMvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PhonesNCategoriesNBrandsViewModel model)
         {
-            model.Phone.created =DateTime.Now;
+            model.Phone.created = DateTime.Now;
             if (ModelState.IsValid)
             {
                 _context.Add(model.Phone);
