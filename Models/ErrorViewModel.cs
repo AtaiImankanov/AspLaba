@@ -1,5 +1,3 @@
-using System;
-
 namespace LabAspMvc.Models
 {
     public class ErrorViewModel

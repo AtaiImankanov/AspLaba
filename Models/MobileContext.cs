@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace LabAspMvc.Models 
+namespace LabAspMvc.Models
 {
     public class MobileContext : DbContext
     {

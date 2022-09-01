@@ -1,27 +1,30 @@
 ﻿using LabAspMvc.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace LabAspMvc.Controllers
 {
-    public class BrandsController : Controller
+    public class OrdersController : Controller
     {
         private readonly MobileContext _context;
 
-        public BrandsController(MobileContext context)
+        public OrdersController(MobileContext context)
         {
             _context = context;
         }
 
-        // GET: Brands
+        // GET: Orders
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Brands.ToListAsync());
+            List<Order> orders = _context.Orders.Include(o => o.Phone).ToList();
+            return View(orders);
         }
 
-        // GET: Brands/Details/5
+        // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -29,39 +32,34 @@ namespace LabAspMvc.Controllers
                 return NotFound();
             }
 
-            var brand = await _context.Brands
+            var order = await _context.Orders
+                .Include(o => o.Phone)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (brand == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(brand);
+            return View(order);
         }
 
-        // GET: Brands/Create
-        public IActionResult Create()
+        // GET: Orders/Create
+        public IActionResult Create(int PhoneId)
         {
-            return View();
+            Phone phone = _context.Phones.FirstOrDefault(p => p.Id == PhoneId);
+                return View(new Order { Phone = phone });
         }
-
-        // POST: Brands/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Brand brand)
+        public IActionResult Create(Order order)
         {
-            if (ModelState.IsValid)
+            if (order != null)
             {
-                _context.Add(brand);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                _context.Orders.Add(order);
+                _context.SaveChanges();
             }
-            return View(brand);
+            return RedirectToAction("Index");
         }
-
-        // GET: Brands/Edit/5
+        // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -69,22 +67,23 @@ namespace LabAspMvc.Controllers
                 return NotFound();
             }
 
-            var brand = await _context.Brands.FindAsync(id);
-            if (brand == null)
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
             {
                 return NotFound();
             }
-            return View(brand);
+            ViewData["PhoneId"] = new SelectList(_context.Phones, "Id", "Id", order.PhoneId);
+            return View(order);
         }
 
-        // POST: Brands/Edit/5
+        // POST: Orders/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Brand brand)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,PhoneId")] Order order)
         {
-            if (id != brand.Id)
+            if (id != order.Id)
             {
                 return NotFound();
             }
@@ -93,12 +92,12 @@ namespace LabAspMvc.Controllers
             {
                 try
                 {
-                    _context.Update(brand);
+                    _context.Update(order);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BrandExists(brand.Id))
+                    if (!OrderExists(order.Id))
                     {
                         return NotFound();
                     }
@@ -109,10 +108,11 @@ namespace LabAspMvc.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(brand);
+            ViewData["PhoneId"] = new SelectList(_context.Phones, "Id", "Id", order.PhoneId);
+            return View(order);
         }
 
-        // GET: Brands/Delete/5
+        // GET: Orders/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -120,30 +120,31 @@ namespace LabAspMvc.Controllers
                 return NotFound();
             }
 
-            var brand = await _context.Brands
+            var order = await _context.Orders
+                .Include(o => o.Phone)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (brand == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(brand);
+            return View(order);
         }
 
-        // POST: Brands/Delete/5
+        // POST: Orders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var brand = await _context.Brands.FindAsync(id);
-            _context.Brands.Remove(brand);
+            var order = await _context.Orders.FindAsync(id);
+            _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BrandExists(int id)
+        private bool OrderExists(int id)
         {
-            return _context.Brands.Any(e => e.Id == id);
+            return _context.Orders.Any(e => e.Id == id);
         }
     }
 }

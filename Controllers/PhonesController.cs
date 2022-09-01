@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using LabAspMvc.Models;
+using LabAspMvc.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using LabAspMvc.Models;
-using LabAspMvc.ViewModels;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace LabAspMvc.Controllers
 {
@@ -66,7 +64,7 @@ namespace LabAspMvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PhonesNCategoriesNBrandsViewModel model)
         {
-            
+
             if (ModelState.IsValid)
             {
                 _context.Add(model.Phone);
@@ -87,13 +85,19 @@ namespace LabAspMvc.Controllers
             }
 
             var phone = await _context.Phones.FindAsync(id);
+            var model = new PhonesNCategoriesNBrandsViewModel
+            {
+                Phone = phone,
+                Brands = _context.Brands.ToList(),
+                Categories = _context.Categories.ToList()
+            };
             if (phone == null)
             {
                 return NotFound();
             }
             ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Id", phone.BrandId);
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Id", phone.CategoryId);
-            return View(phone);
+            return View(model);
         }
 
         // POST: Phones/Edit/5
